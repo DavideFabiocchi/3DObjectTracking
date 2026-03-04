@@ -1,16 +1,24 @@
-# Local build directory
-build_m3t/
+# M3T tree policy (moved from M3T/.gitignore)
+/M3T/*
+/M3T/*/
+/M3T/*.asv
+/M3T/doc/html
+!/M3T/include/
+!/M3T/src/
+!/M3T/third_party/
+!/M3T/test/
+!/M3T/examples/
+!/M3T/data/
+!/M3T/doc/
+!/M3T/.clang-format
+!/M3T/CMakeLists.txt
+!/M3T/readme.md
+
+# Local build directories
+/build_m3t/
+/build/
+/M3T/build/
 
 # IDS backend generated artifacts
-IDS_cpp_codex/ids_backend/ids_backend_smoke
-IDS_cpp_codex/ids_backend/smoke_run.log
-
-# IDS GUI scratch artifacts (not part of integrated backend)
-IDS_cpp_codex/industrial_gui
-IDS_cpp_codex/*.exe
-IDS_cpp_codex/*.ilk
-IDS_cpp_codex/*.obj
-IDS_cpp_codex/*.pdb
-IDS_cpp_codex/vc140.pdb
-IDS_cpp_codex/build_gui.log
-IDS_cpp_codex/acq_*_timestamps.csv
+/ids_backend/ids_backend_smoke
+/ids_backend/smoke_run.log

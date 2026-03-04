@@ -16,7 +16,7 @@ Integrate IDS RGB cameras into M3T as `ColorCamera` sources to run multi-camera 
 
 ## Current State
 - `M3T` supports color-only modalities (`RegionModality`, `TextureModality`) and can track without depth if configured accordingly.
-- `IDS_cpp_codex/industrial_gui.cpp` already includes robust IDS camera control logic in `CameraController` (discovery, config, start/stop stream, frame loop).
+- Original extraction source was `IDS_cpp_codex/industrial_gui.cpp` (`CameraController`: discovery, config, start/stop stream, frame loop).
 - IDS code is currently tightly coupled with GUI application structure and must be extracted into a reusable backend.
 
 ## Integration Contract
@@ -41,7 +41,7 @@ The new IDS integration must provide:
 
 ### Step 2 - Extract IDS backend from GUI code
 - Deliverables:
-  - New backend module under `IDS_cpp_codex/ids_backend/`
+  - New backend module under `ids_backend/`
   - Core camera control moved out from `industrial_gui.cpp`
   - Simple CLI smoke executable for open/start/frame/stop
 - Commit message:
@@ -98,7 +98,7 @@ The new IDS integration must provide:
 - Deliverables:
   - Runtime robustness checks (timeouts/reconnect/error messages)
   - Documentation update for setup/runbook
-  - Remove unneeded binaries and GUI-only assets from `IDS_cpp_codex` after backend integration is complete
+  - Remove unneeded binaries and GUI-only assets from legacy extraction folders after backend integration is complete
 - Commit message:
   - `chore(ids): cleanup legacy gui artifacts after backend integration`
 - Gate:
@@ -116,7 +116,7 @@ The new IDS integration must provide:
   - object initialization success rate
   - pose continuity and jitter checks
 
-## Future cleanup policy for IDS_cpp_codex
+## Future cleanup policy for IDS integration files
 After Step 5-7 are validated, keep only:
 - reusable backend source
 - calibration/export utilities

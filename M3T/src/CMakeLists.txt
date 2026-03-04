@@ -78,7 +78,7 @@ if (USE_REALSENSE)
     list(APPEND HEADERS ../include/m3t/realsense_camera.h)
 endif ()
 if (USE_IDS)
-    list(APPEND SOURCES ids_camera.cpp ../../IDS_cpp_codex/ids_backend/ids_single_camera_backend.cpp)
+    list(APPEND SOURCES ids_camera.cpp ../../ids_backend/ids_single_camera_backend.cpp)
     list(APPEND HEADERS ../include/m3t/ids_camera.h)
 endif ()
 
@@ -114,7 +114,7 @@ if (USE_IDS)
     target_include_directories(m3t PRIVATE
             ${IDS_PEAK_INCLUDE_DIR}
             ${IDS_PEAK_INCLUDE_DIR}/ids-peak
-            ${CMAKE_CURRENT_SOURCE_DIR}/../../IDS_cpp_codex/ids_backend)
+            ${CMAKE_CURRENT_SOURCE_DIR}/../../ids_backend)
 endif ()
 set_target_properties(m3t PROPERTIES PUBLIC_HEADER "${HEADERS}")
 

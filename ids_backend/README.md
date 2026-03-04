@@ -21,7 +21,7 @@ Provide a reusable backend that can later be integrated into `M3T`
 
 ## Build
 ```bash
-cd IDS_cpp_codex/ids_backend
+cd ids_backend
 source ./setup_ids_peak_env.sh
 ./build_backend_smoke.sh
 ```

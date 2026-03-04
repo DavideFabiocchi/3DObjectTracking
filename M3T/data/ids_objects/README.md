@@ -10,7 +10,7 @@ This folder contains assets and YAML metafiles for running IDS RGB tracking with
 ## Run command
 ```bash
 cd /home/ramslab/3DObjectTracking
-source IDS_cpp_codex/ids_backend/setup_ids_peak_env.sh
+source ids_backend/setup_ids_peak_env.sh
 
 ./build_m3t/examples/run_on_ids_camera_sequence \
   /home/ramslab/3DObjectTracking/M3T/examples/ids_camera_example.yaml \
