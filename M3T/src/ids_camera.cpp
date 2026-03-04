@@ -49,19 +49,21 @@ bool IdsColorCamera::SetUp() {
     return false;
   }
 
-  ids_backend::IdsCameraConfig cfg;
-  cfg.roi_offset_x = roi_offset_x_;
-  cfg.roi_offset_y = roi_offset_y_;
-  cfg.roi_width = roi_width_;
-  cfg.roi_height = roi_height_;
-  cfg.fps = fps_;
-  cfg.gain = gain_;
-  cfg.exposure_ms = exposure_ms_;
-  cfg.pixel_format = pixel_format_;
+  if (apply_camera_settings_) {
+    ids_backend::IdsCameraConfig cfg;
+    cfg.roi_offset_x = roi_offset_x_;
+    cfg.roi_offset_y = roi_offset_y_;
+    cfg.roi_width = roi_width_;
+    cfg.roi_height = roi_height_;
+    cfg.fps = fps_;
+    cfg.gain = gain_;
+    cfg.exposure_ms = exposure_ms_;
+    cfg.pixel_format = pixel_format_;
 
-  if (!backend_ptr_->ApplyConfig(cfg, &err)) {
-    std::cerr << "[IdsColorCamera] ApplyConfig failed: " << err << std::endl;
-    return false;
+    if (!backend_ptr_->ApplyConfig(cfg, &err)) {
+      std::cerr << "[IdsColorCamera] ApplyConfig failed: " << err << std::endl;
+      return false;
+    }
   }
 
   if (!backend_ptr_->StartStreaming(&err)) {
@@ -182,6 +184,11 @@ void IdsColorCamera::set_pixel_format(const std::string &pixel_format) {
   set_up_ = false;
 }
 
+void IdsColorCamera::set_apply_camera_settings(bool apply_camera_settings) {
+  apply_camera_settings_ = apply_camera_settings;
+  set_up_ = false;
+}
+
 int IdsColorCamera::camera_index() const { return camera_index_; }
 int IdsColorCamera::roi_offset_x() const { return roi_offset_x_; }
 int IdsColorCamera::roi_offset_y() const { return roi_offset_y_; }
@@ -191,6 +198,7 @@ double IdsColorCamera::fps() const { return fps_; }
 double IdsColorCamera::gain() const { return gain_; }
 double IdsColorCamera::exposure_ms() const { return exposure_ms_; }
 const std::string &IdsColorCamera::pixel_format() const { return pixel_format_; }
+bool IdsColorCamera::apply_camera_settings() const { return apply_camera_settings_; }
 
 bool IdsColorCamera::LoadMetaData() {
   cv::FileStorage fs;
@@ -217,6 +225,7 @@ bool IdsColorCamera::LoadMetaData() {
   ReadOptionalValueFromYaml(fs, "gain", &gain_);
   ReadOptionalValueFromYaml(fs, "exposure_ms", &exposure_ms_);
   ReadOptionalValueFromYaml(fs, "pixel_format", &pixel_format_);
+  ReadOptionalValueFromYaml(fs, "apply_camera_settings", &apply_camera_settings_);
 
   fs.release();
 

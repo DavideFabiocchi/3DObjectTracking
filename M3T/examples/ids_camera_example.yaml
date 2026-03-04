@@ -1,3 +1,4 @@
+%YAML:1.2
 intrinsics:
   f_u: 1200.0
   f_v: 1200.0
@@ -21,10 +22,12 @@ roi_offset_x: 0
 roi_offset_y: 0
 roi_width: 1984
 roi_height: 1264
-fps: 60.0
-gain: 1.0
-exposure_ms: 3.0
-pixel_format: "BGR8"
+fps: 30.0
+gain: 4.0
+exposure_ms: 12.0
+pixel_format: "BayerRG8"
+# If 0, M3T keeps camera parameters already set in IDS Cockpit/UserSet.
+apply_camera_settings: 1
 
 # Optional saving controls
 save_images: 0

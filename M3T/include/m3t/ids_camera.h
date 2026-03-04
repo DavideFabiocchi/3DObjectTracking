@@ -41,6 +41,7 @@ class IdsColorCamera : public ColorCamera {
   void set_gain(double gain);
   void set_exposure_ms(double exposure_ms);
   void set_pixel_format(const std::string &pixel_format);
+  void set_apply_camera_settings(bool apply_camera_settings);
 
   int camera_index() const;
   int roi_offset_x() const;
@@ -51,6 +52,7 @@ class IdsColorCamera : public ColorCamera {
   double gain() const;
   double exposure_ms() const;
   const std::string &pixel_format() const;
+  bool apply_camera_settings() const;
   double applied_fps_hz() const;
 
  private:
@@ -65,6 +67,7 @@ class IdsColorCamera : public ColorCamera {
   double gain_ = 1.0;
   double exposure_ms_ = 3.0;
   std::string pixel_format_ = "BGR8";
+  bool apply_camera_settings_ = true;
 
   std::unique_ptr<ids_backend::IdsSingleCameraBackend> backend_ptr_;
 };
