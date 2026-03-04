@@ -1,6 +1,7 @@
 #include "ids_single_camera_backend.h"
 
 #include <algorithm>
+#include <cstring>
 
 namespace ids_backend {
 

@@ -10,6 +10,7 @@ project(M3T)
 option(USE_AZURE_KINECT "Use Azure Kinect" ON)
 option(USE_REALSENSE "Use RealSense D435" ON)
 option(USE_GTEST "Use gtest" ON)
+option(USE_IDS "Use IDS peak cameras" OFF)
 
 
 # Libraries
@@ -41,6 +42,37 @@ endif ()
 
 if (USE_REALSENSE)
     find_package(realsense2 REQUIRED)
+endif ()
+
+if (USE_IDS)
+    set(IDS_PEAK_INCLUDE_DIR "" CACHE PATH "Path to IDS peak include directory")
+    set(IDS_PEAK_LIBRARY "" CACHE FILEPATH "Path to IDS peak library")
+
+    if (NOT IDS_PEAK_INCLUDE_DIR)
+        find_path(IDS_PEAK_INCLUDE_DIR
+                NAMES peak/peak.hpp
+                HINTS ENV IDS_PEAK_INCLUDE
+                PATHS /usr/include
+                PATH_SUFFIXES
+                ids_peak-1.11.1
+                ids_peak-1.11.0
+                ids_peak-1.10.0)
+    endif ()
+
+    if (NOT IDS_PEAK_LIBRARY)
+        find_library(IDS_PEAK_LIBRARY
+                NAMES ids_peak
+                HINTS ENV IDS_PEAK_LIB
+                PATHS /usr/lib /usr/lib/x86_64-linux-gnu
+                PATH_SUFFIXES
+                ids_peak-1.11.1
+                ids_peak-1.11.0
+                ids_peak-1.10.0)
+    endif ()
+
+    if (NOT IDS_PEAK_INCLUDE_DIR OR NOT IDS_PEAK_LIBRARY)
+        message(FATAL_ERROR "USE_IDS=ON but IDS peak SDK was not found. Set IDS_PEAK_INCLUDE_DIR and IDS_PEAK_LIBRARY (or env IDS_PEAK_INCLUDE/IDS_PEAK_LIB).")
+    endif ()
 endif ()
 
 find_package(OpenMP)
@@ -121,6 +153,9 @@ if (USE_AZURE_KINECT)
 endif ()
 if (USE_REALSENSE)
     add_definitions( -DUSE_REALSENSE=TRUE )
+endif ()
+if (USE_IDS)
+    add_definitions( -DUSE_IDS=TRUE )
 endif ()
 if(OpenCV_CUDA_VERSION)
     add_definitions( -DUSE_CUDA=TRUE )

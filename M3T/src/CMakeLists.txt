@@ -77,6 +77,10 @@ if (USE_REALSENSE)
     list(APPEND SOURCES realsense_camera.cpp)
     list(APPEND HEADERS ../include/m3t/realsense_camera.h)
 endif ()
+if (USE_IDS)
+    list(APPEND SOURCES ids_camera.cpp ../../IDS_cpp_codex/ids_backend/ids_single_camera_backend.cpp)
+    list(APPEND HEADERS ../include/m3t/ids_camera.h)
+endif ()
 
 
 # Define libraries
@@ -91,6 +95,9 @@ endif ()
 if (USE_REALSENSE)
     list(APPEND LIBRARIES ${realsense2_LIBRARY})
 endif ()
+if (USE_IDS)
+    list(APPEND LIBRARIES ${IDS_PEAK_LIBRARY})
+endif ()
 
 
 # Define target
@@ -103,6 +110,11 @@ target_include_directories(m3t PUBLIC
 target_include_directories(m3t PUBLIC 
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../third_party>
         $<INSTALL_INTERFACE:include>)
+if (USE_IDS)
+    target_include_directories(m3t PRIVATE
+            ${IDS_PEAK_INCLUDE_DIR}
+            ${CMAKE_CURRENT_SOURCE_DIR}/../../IDS_cpp_codex/ids_backend)
+endif ()
 set_target_properties(m3t PROPERTIES PUBLIC_HEADER "${HEADERS}")
 
 
