@@ -34,6 +34,7 @@ int main(int argc, char *argv[]) {
   constexpr bool kVisualizePoseResult = false;
 
   auto tracker_ptr{std::make_shared<m3t::Tracker>("tracker")};
+  tracker_ptr->set_viewer_time(10);
   auto renderer_geometry_ptr{
       std::make_shared<m3t::RendererGeometry>("renderer_geometry")};
 
@@ -92,6 +93,8 @@ int main(int argc, char *argv[]) {
   }
 
   if (!tracker_ptr->SetUp()) return -1;
+  std::cout << "Keys: D=detect, T=start tracking, S=stop, Q=quit"
+            << std::endl;
   if (!tracker_ptr->RunTrackerProcess(true, false)) return -1;
   return 0;
 }

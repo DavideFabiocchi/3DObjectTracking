@@ -5,9 +5,19 @@
 #include <ids_single_camera_backend.h>
 #include <m3t/common.h>
 
+#include <algorithm>
+#include <cctype>
 #include <iostream>
 
 namespace m3t {
+
+namespace {
+std::string Lower(std::string s) {
+  std::transform(s.begin(), s.end(), s.begin(),
+                 [](unsigned char c) { return std::tolower(c); });
+  return s;
+}
+}  // namespace
 
 IdsColorCamera::IdsColorCamera(const std::string &name, int camera_index)
     : ColorCamera{name}, camera_index_{camera_index} {
@@ -99,18 +109,18 @@ bool IdsColorCamera::UpdateImage(bool synchronized) {
   if (frame.bytes_per_pixel <= 1) {
     cv::Mat one_channel(frame.height, frame.width, CV_8UC1,
                         const_cast<uint8_t *>(frame.bytes.data()));
-    const auto &pf = frame.pixel_format_name;
-    if (pf.find("BayerRG8") != std::string::npos ||
-        pf.find("BayerRG") != std::string::npos) {
+    const auto pf = Lower(frame.pixel_format_name);
+    if (pf.find("bayerrg8") != std::string::npos ||
+        pf.find("bayerrg") != std::string::npos) {
       cv::cvtColor(one_channel, image_, cv::COLOR_BayerRG2BGR);
-    } else if (pf.find("BayerBG8") != std::string::npos ||
-               pf.find("BayerBG") != std::string::npos) {
+    } else if (pf.find("bayerbg8") != std::string::npos ||
+               pf.find("bayerbg") != std::string::npos) {
       cv::cvtColor(one_channel, image_, cv::COLOR_BayerBG2BGR);
-    } else if (pf.find("BayerGR8") != std::string::npos ||
-               pf.find("BayerGR") != std::string::npos) {
+    } else if (pf.find("bayergr8") != std::string::npos ||
+               pf.find("bayergr") != std::string::npos) {
       cv::cvtColor(one_channel, image_, cv::COLOR_BayerGR2BGR);
-    } else if (pf.find("BayerGB8") != std::string::npos ||
-               pf.find("BayerGB") != std::string::npos) {
+    } else if (pf.find("bayergb8") != std::string::npos ||
+               pf.find("bayergb") != std::string::npos) {
       cv::cvtColor(one_channel, image_, cv::COLOR_BayerGB2BGR);
     } else {
       cv::cvtColor(one_channel, image_, cv::COLOR_GRAY2BGR);
@@ -118,15 +128,21 @@ bool IdsColorCamera::UpdateImage(bool synchronized) {
   } else if (frame.bytes_per_pixel == 3) {
     cv::Mat three_channel(frame.height, frame.width, CV_8UC3,
                           const_cast<uint8_t *>(frame.bytes.data()));
-    if (frame.pixel_format_name == "RGB8")
+    const auto pf = Lower(frame.pixel_format_name);
+    if (pf == "rgb8")
       cv::cvtColor(three_channel, image_, cv::COLOR_RGB2BGR);
     else
       image_ = three_channel.clone();
   } else if (frame.bytes_per_pixel == 4) {
     cv::Mat four_channel(frame.height, frame.width, CV_8UC4,
                          const_cast<uint8_t *>(frame.bytes.data()));
-    if (frame.pixel_format_name == "RGBA8")
+    const auto pf = Lower(frame.pixel_format_name);
+    if (pf == "rgba8" || pf == "rgba" || pf == "rgba8packed" ||
+        pf == "rgba8" || pf == "rgba")
       cv::cvtColor(four_channel, image_, cv::COLOR_RGBA2BGR);
+    else if (pf == "bgra8" || pf == "bgra" || pf == "bgra8packed" ||
+             pf == "bgr8a8" || pf == "bgra8packed")
+      cv::cvtColor(four_channel, image_, cv::COLOR_BGRA2BGR);
     else
       cv::cvtColor(four_channel, image_, cv::COLOR_BGRA2BGR);
   } else {

@@ -2,6 +2,7 @@
 // Copyright (c) 2023 Manuel Stoiber, German Aerospace Center (DLR)
 
 #include <m3t/tracker.h>
+#include <cctype>
 
 namespace m3t {
 
@@ -375,7 +376,8 @@ bool Tracker::UpdateViewers(int iteration) {
     for (auto &viewer_ptr : viewer_ptrs_) {
       viewer_ptr->UpdateViewer(iteration);
     }
-    char key = cv::waitKey(viewer_time_);
+    char key = static_cast<char>(cv::waitKey(viewer_time_));
+    key = static_cast<char>(std::tolower(static_cast<unsigned char>(key)));
     if (key == 'd') {
       ExecuteDetection(false);
     } else if (key == 'x') {
