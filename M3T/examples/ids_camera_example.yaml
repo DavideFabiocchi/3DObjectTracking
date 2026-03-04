@@ -1,0 +1,33 @@
+intrinsics:
+  f_u: 1200.0
+  f_v: 1200.0
+  pp_x: 992.0
+  pp_y: 632.0
+  width: 1984
+  height: 1264
+
+camera2world_pose: !!opencv-matrix
+  rows: 4
+  cols: 4
+  dt: f
+  data: [1, 0, 0, 0,
+         0, 1, 0, 0,
+         0, 0, 1, 0,
+         0, 0, 0, 1]
+
+# IDS-specific parameters
+camera_index: 0
+roi_offset_x: 0
+roi_offset_y: 0
+roi_width: 1984
+roi_height: 1264
+fps: 60.0
+gain: 0.0
+exposure_ms: 3.0
+pixel_format: "BGR8"
+
+# Optional saving controls
+save_images: 0
+save_directory: "./"
+save_index: 0
+save_image_type: "png"
