@@ -13,8 +13,13 @@ bool SetPixelFormat(peak::core::NodeMap* node_map, const std::string& requested,
       node_map->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat");
 
   if (requested == "Mono8") {
-    pixel_format->SetCurrentEntry("Mono8");
-    *is_mono8 = true;
+    try {
+      pixel_format->SetCurrentEntry("Mono8");
+      *is_mono8 = true;
+    } catch (...) {
+      // Some cameras expose PixelFormat as read-only in specific states.
+      // Keep current camera format and continue.
+    }
     return true;
   }
 
@@ -23,8 +28,12 @@ bool SetPixelFormat(peak::core::NodeMap* node_map, const std::string& requested,
     *is_mono8 = false;
     return true;
   } catch (...) {
-    pixel_format->SetCurrentEntry("Mono8");
-    *is_mono8 = true;
+    try {
+      pixel_format->SetCurrentEntry("Mono8");
+      *is_mono8 = true;
+    } catch (...) {
+      // Keep current camera format and continue.
+    }
     return true;
   }
 }
