@@ -27,7 +27,7 @@ class IdsColorCamera : public ColorCamera {
   IdsColorCamera(const std::string &name, int camera_index = 0);
   IdsColorCamera(const std::string &name,
                  const std::filesystem::path &metafile_path);
-  ~IdsColorCamera() override;
+  ~IdsColorCamera();
 
   bool SetUp() override;
   bool UpdateImage(bool synchronized) override;
