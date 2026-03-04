@@ -22,6 +22,7 @@ Provide a reusable backend that can later be integrated into `M3T`
 ## Build
 ```bash
 cd IDS_cpp_codex/ids_backend
+source ./setup_ids_peak_env.sh
 ./build_backend_smoke.sh
 ```
 
@@ -32,6 +33,7 @@ cd IDS_cpp_codex/ids_backend
 
 Example:
 ```bash
+source ./setup_ids_peak_env.sh
 ./ids_backend_smoke 0 20
 ```
 
@@ -40,3 +42,5 @@ Example:
   selection.
 - Serial-based selection and richer metadata will be added in the next step
   before wiring into M3T.
+- `setup_ids_peak_env.sh` prefers system `.deb` installation paths and can also
+  be called with a custom IDS root path.
