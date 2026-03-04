@@ -41,6 +41,7 @@ g++ -std=c++17 -O2 -pthread \
   "$ROOT_DIR/ids_single_camera_backend.cpp" \
   "$ROOT_DIR/ids_backend_smoke.cpp" \
   -I"$IDS_PEAK_INCLUDE" \
+  -I"$IDS_PEAK_INCLUDE/ids-peak" \
   -L"$IDS_PEAK_LIB" -Wl,-rpath,"$IDS_PEAK_LIB" \
   -lids_peak \
   -o "$OUT_BIN"

@@ -113,6 +113,7 @@ target_include_directories(m3t PUBLIC
 if (USE_IDS)
     target_include_directories(m3t PRIVATE
             ${IDS_PEAK_INCLUDE_DIR}
+            ${IDS_PEAK_INCLUDE_DIR}/ids-peak
             ${CMAKE_CURRENT_SOURCE_DIR}/../../IDS_cpp_codex/ids_backend)
 endif ()
 set_target_properties(m3t PROPERTIES PUBLIC_HEADER "${HEADERS}")

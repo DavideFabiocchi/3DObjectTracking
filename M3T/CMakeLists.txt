@@ -50,13 +50,15 @@ if (USE_IDS)
 
     if (NOT IDS_PEAK_INCLUDE_DIR)
         find_path(IDS_PEAK_INCLUDE_DIR
-                NAMES peak/peak.hpp
+                NAMES peak/peak.hpp ids-peak/peak/peak.hpp
                 HINTS ENV IDS_PEAK_INCLUDE
                 PATHS /usr/include
                 PATH_SUFFIXES
                 ids_peak-1.11.1
                 ids_peak-1.11.0
-                ids_peak-1.10.0)
+                ids_peak-1.10.0
+                ids-peak_2.20.0.0-408_amd64/include
+                ids-peak)
     endif ()
 
     if (NOT IDS_PEAK_LIBRARY)
