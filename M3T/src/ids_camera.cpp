@@ -97,14 +97,18 @@ bool IdsColorCamera::UpdateImage(bool synchronized) {
   if (frame.bytes_per_pixel <= 1) {
     cv::Mat one_channel(frame.height, frame.width, CV_8UC1,
                         const_cast<uint8_t *>(frame.bytes.data()));
-
-    if (frame.pixel_format_name == "BayerRG8") {
+    const auto &pf = frame.pixel_format_name;
+    if (pf.find("BayerRG8") != std::string::npos ||
+        pf.find("BayerRG") != std::string::npos) {
       cv::cvtColor(one_channel, image_, cv::COLOR_BayerRG2BGR);
-    } else if (frame.pixel_format_name == "BayerBG8") {
+    } else if (pf.find("BayerBG8") != std::string::npos ||
+               pf.find("BayerBG") != std::string::npos) {
       cv::cvtColor(one_channel, image_, cv::COLOR_BayerBG2BGR);
-    } else if (frame.pixel_format_name == "BayerGR8") {
+    } else if (pf.find("BayerGR8") != std::string::npos ||
+               pf.find("BayerGR") != std::string::npos) {
       cv::cvtColor(one_channel, image_, cv::COLOR_BayerGR2BGR);
-    } else if (frame.pixel_format_name == "BayerGB8") {
+    } else if (pf.find("BayerGB8") != std::string::npos ||
+               pf.find("BayerGB") != std::string::npos) {
       cv::cvtColor(one_channel, image_, cv::COLOR_BayerGB2BGR);
     } else {
       cv::cvtColor(one_channel, image_, cv::COLOR_GRAY2BGR);
