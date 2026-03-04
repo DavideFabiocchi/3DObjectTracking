@@ -62,7 +62,7 @@ class IdsColorCamera : public ColorCamera {
   int roi_width_ = 1984;
   int roi_height_ = 1264;
   double fps_ = 60.0;
-  double gain_ = 0.0;
+  double gain_ = 1.0;
   double exposure_ms_ = 3.0;
   std::string pixel_format_ = "BGR8";
 

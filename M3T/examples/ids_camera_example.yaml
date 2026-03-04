@@ -22,7 +22,7 @@ roi_offset_y: 0
 roi_width: 1984
 roi_height: 1264
 fps: 60.0
-gain: 0.0
+gain: 1.0
 exposure_ms: 3.0
 pixel_format: "BGR8"
 

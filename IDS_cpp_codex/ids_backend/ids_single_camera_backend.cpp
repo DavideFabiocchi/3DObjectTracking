@@ -29,6 +29,13 @@ bool SetPixelFormat(peak::core::NodeMap* node_map, const std::string& requested,
   }
 }
 
+double ClampToNodeRange(const std::shared_ptr<peak::core::nodes::FloatNode>& node,
+                        double requested) {
+  const double min_v = node->Minimum();
+  const double max_v = node->Maximum();
+  return std::clamp(requested, min_v, max_v);
+}
+
 }  // namespace
 
 IdsSingleCameraBackend::IdsSingleCameraBackend() = default;
@@ -165,10 +172,17 @@ bool IdsSingleCameraBackend::ApplyConfig(const IdsCameraConfig& cfg,
     node_map_->FindNode<peak::core::nodes::IntegerNode>("OffsetY")
         ->SetValue(cfg.roi_offset_y);
 
-    node_map_->FindNode<peak::core::nodes::FloatNode>("ExposureTime")
-        ->SetValue(cfg.exposure_ms * 1000.0);
-    node_map_->FindNode<peak::core::nodes::FloatNode>("Gain")
-        ->SetValue(cfg.gain);
+    {
+      auto exposure_node =
+          node_map_->FindNode<peak::core::nodes::FloatNode>("ExposureTime");
+      const double exposure_us = ClampToNodeRange(exposure_node, cfg.exposure_ms * 1000.0);
+      exposure_node->SetValue(exposure_us);
+    }
+    {
+      auto gain_node = node_map_->FindNode<peak::core::nodes::FloatNode>("Gain");
+      const double gain = ClampToNodeRange(gain_node, cfg.gain);
+      gain_node->SetValue(gain);
+    }
 
     bool is_mono8 = false;
     SetPixelFormat(node_map_.get(), cfg.pixel_format, &is_mono8);
@@ -184,7 +198,7 @@ bool IdsSingleCameraBackend::ApplyConfig(const IdsCameraConfig& cfg,
 
     auto fps =
         node_map_->FindNode<peak::core::nodes::FloatNode>("AcquisitionFrameRate");
-    fps->SetValue(cfg.fps);
+    fps->SetValue(ClampToNodeRange(fps, cfg.fps));
     applied_fps_hz_ = fps->Value();
 
     try {

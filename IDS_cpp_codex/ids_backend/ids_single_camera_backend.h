@@ -17,7 +17,7 @@ struct IdsCameraConfig {
   int roi_width = 1984;
   int roi_height = 1264;
   double fps = 60.0;
-  double gain = 0.0;
+  double gain = 1.0;
   double exposure_ms = 3.0;
   std::string pixel_format = "BGR8";  // fallback to Mono8 if unsupported
 };
