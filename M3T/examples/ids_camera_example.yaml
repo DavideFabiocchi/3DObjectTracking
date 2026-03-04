@@ -23,11 +23,13 @@ roi_offset_y: 0
 roi_width: 1984
 roi_height: 1264
 fps: 30.0
-gain: 4.0
-exposure_ms: 12.0
-pixel_format: "BayerRG8"
+gain: 2.0
+exposure_ms: 30.0
+pixel_format: "BGRa8"
 # If 0, M3T keeps camera parameters already set in IDS Cockpit/UserSet.
 apply_camera_settings: 1
+# If colors look swapped (e.g. red appears blue), set to 1.
+swap_rb_channels: 1
 
 # Optional saving controls
 save_images: 0

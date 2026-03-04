@@ -151,6 +151,10 @@ bool IdsColorCamera::UpdateImage(bool synchronized) {
     return false;
   }
 
+  if (swap_rb_channels_) {
+    cv::cvtColor(image_, image_, cv::COLOR_BGR2RGB);
+  }
+
   SaveImageIfDesired();
   return true;
 }
@@ -205,6 +209,11 @@ void IdsColorCamera::set_apply_camera_settings(bool apply_camera_settings) {
   set_up_ = false;
 }
 
+void IdsColorCamera::set_swap_rb_channels(bool swap_rb_channels) {
+  swap_rb_channels_ = swap_rb_channels;
+  set_up_ = false;
+}
+
 int IdsColorCamera::camera_index() const { return camera_index_; }
 int IdsColorCamera::roi_offset_x() const { return roi_offset_x_; }
 int IdsColorCamera::roi_offset_y() const { return roi_offset_y_; }
@@ -215,6 +224,7 @@ double IdsColorCamera::gain() const { return gain_; }
 double IdsColorCamera::exposure_ms() const { return exposure_ms_; }
 const std::string &IdsColorCamera::pixel_format() const { return pixel_format_; }
 bool IdsColorCamera::apply_camera_settings() const { return apply_camera_settings_; }
+bool IdsColorCamera::swap_rb_channels() const { return swap_rb_channels_; }
 
 bool IdsColorCamera::LoadMetaData() {
   cv::FileStorage fs;
@@ -242,6 +252,7 @@ bool IdsColorCamera::LoadMetaData() {
   ReadOptionalValueFromYaml(fs, "exposure_ms", &exposure_ms_);
   ReadOptionalValueFromYaml(fs, "pixel_format", &pixel_format_);
   ReadOptionalValueFromYaml(fs, "apply_camera_settings", &apply_camera_settings_);
+  ReadOptionalValueFromYaml(fs, "swap_rb_channels", &swap_rb_channels_);
 
   fs.release();
 
