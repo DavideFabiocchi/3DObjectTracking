@@ -56,4 +56,7 @@ endif ()
 if (USE_IDS)
     add_executable(run_on_ids_camera_sequence run_on_ids_camera_sequence.cpp)
     target_link_libraries(run_on_ids_camera_sequence PUBLIC m3t)
+
+    add_executable(run_on_ids_multi_camera_sequence run_on_ids_multi_camera_sequence.cpp)
+    target_link_libraries(run_on_ids_multi_camera_sequence PUBLIC m3t)
 endif ()
