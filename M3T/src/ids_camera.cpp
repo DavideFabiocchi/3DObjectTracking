@@ -94,14 +94,39 @@ bool IdsColorCamera::UpdateImage(bool synchronized) {
     return false;
   }
 
-  if (frame.is_mono8 || frame.bytes_per_pixel <= 1) {
-    cv::Mat gray(frame.height, frame.width, CV_8UC1,
-                 const_cast<uint8_t *>(frame.bytes.data()));
-    cv::cvtColor(gray, image_, cv::COLOR_GRAY2BGR);
+  if (frame.bytes_per_pixel <= 1) {
+    cv::Mat one_channel(frame.height, frame.width, CV_8UC1,
+                        const_cast<uint8_t *>(frame.bytes.data()));
+
+    if (frame.pixel_format_name == "BayerRG8") {
+      cv::cvtColor(one_channel, image_, cv::COLOR_BayerRG2BGR);
+    } else if (frame.pixel_format_name == "BayerBG8") {
+      cv::cvtColor(one_channel, image_, cv::COLOR_BayerBG2BGR);
+    } else if (frame.pixel_format_name == "BayerGR8") {
+      cv::cvtColor(one_channel, image_, cv::COLOR_BayerGR2BGR);
+    } else if (frame.pixel_format_name == "BayerGB8") {
+      cv::cvtColor(one_channel, image_, cv::COLOR_BayerGB2BGR);
+    } else {
+      cv::cvtColor(one_channel, image_, cv::COLOR_GRAY2BGR);
+    }
+  } else if (frame.bytes_per_pixel == 3) {
+    cv::Mat three_channel(frame.height, frame.width, CV_8UC3,
+                          const_cast<uint8_t *>(frame.bytes.data()));
+    if (frame.pixel_format_name == "RGB8")
+      cv::cvtColor(three_channel, image_, cv::COLOR_RGB2BGR);
+    else
+      image_ = three_channel.clone();
+  } else if (frame.bytes_per_pixel == 4) {
+    cv::Mat four_channel(frame.height, frame.width, CV_8UC4,
+                         const_cast<uint8_t *>(frame.bytes.data()));
+    if (frame.pixel_format_name == "RGBA8")
+      cv::cvtColor(four_channel, image_, cv::COLOR_RGBA2BGR);
+    else
+      cv::cvtColor(four_channel, image_, cv::COLOR_BGRA2BGR);
   } else {
-    cv::Mat bgr(frame.height, frame.width, CV_8UC3,
-                const_cast<uint8_t *>(frame.bytes.data()));
-    image_ = bgr.clone();
+    std::cerr << "[IdsColorCamera] Unsupported bytes_per_pixel: "
+              << frame.bytes_per_pixel << std::endl;
+    return false;
   }
 
   SaveImageIfDesired();

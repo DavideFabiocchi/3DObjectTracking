@@ -8,34 +8,48 @@ namespace ids_backend {
 namespace {
 
 bool SetPixelFormat(peak::core::NodeMap* node_map, const std::string& requested,
-                    bool* is_mono8) {
+                    bool* is_mono8, std::string* selected_format) {
   auto pixel_format =
       node_map->FindNode<peak::core::nodes::EnumerationNode>("PixelFormat");
 
-  if (requested == "Mono8") {
+  auto set_format = [&](const std::string& fmt, bool mono) {
     try {
-      pixel_format->SetCurrentEntry("Mono8");
-      *is_mono8 = true;
+      pixel_format->SetCurrentEntry(fmt);
+      *is_mono8 = mono;
+      *selected_format = fmt;
+      return true;
     } catch (...) {
+      return false;
+    }
+  };
+
+  if (requested == "Mono8") {
+    if (!set_format("Mono8", true)) {
       // Some cameras expose PixelFormat as read-only in specific states.
       // Keep current camera format and continue.
     }
     return true;
   }
 
-  try {
-    pixel_format->SetCurrentEntry("BGR8");
-    *is_mono8 = false;
-    return true;
-  } catch (...) {
-    try {
-      pixel_format->SetCurrentEntry("Mono8");
-      *is_mono8 = true;
-    } catch (...) {
-      // Keep current camera format and continue.
-    }
-    return true;
+  // Prefer true color formats, then Bayer, then Mono.
+  const std::vector<std::pair<std::string, bool>> candidates{
+      {"BGR8", false}, {"RGB8", false}, {"BGRa8", false}, {"RGBA8", false},
+      {"BayerRG8", false}, {"BayerBG8", false}, {"BayerGR8", false},
+      {"BayerGB8", false}, {"Mono8", true}};
+  for (const auto& c : candidates) {
+    if (set_format(c.first, c.second)) return true;
   }
+
+  // Keep current camera format and continue.
+  try {
+    const auto cur = pixel_format->CurrentEntry();
+    if (cur) {
+      *selected_format = cur->SymbolicValue();
+      *is_mono8 = ((*selected_format).find("Mono") != std::string::npos);
+    }
+  } catch (...) {
+  }
+  return true;
 }
 
 double ClampToNodeRange(const std::shared_ptr<peak::core::nodes::FloatNode>& node,
@@ -194,7 +208,11 @@ bool IdsSingleCameraBackend::ApplyConfig(const IdsCameraConfig& cfg,
     }
 
     bool is_mono8 = false;
-    SetPixelFormat(node_map_.get(), cfg.pixel_format, &is_mono8);
+    std::string selected_format{"Mono8"};
+    SetPixelFormat(node_map_.get(), cfg.pixel_format, &is_mono8,
+                   &selected_format);
+    is_grayscale_format_ = is_mono8;
+    current_pixel_format_name_ = selected_format;
 
     node_map_->FindNode<peak::core::nodes::EnumerationNode>("TriggerMode")
         ->SetCurrentEntry("Off");
@@ -333,6 +351,23 @@ bool IdsSingleCameraBackend::GrabFrame(int timeout_ms, IdsFrame* frame,
       return false;
     }
 
+    // Drop stale queued frames and keep only the latest buffer to minimize
+    // end-to-end latency when processing is slower than camera FPS.
+    while (true) {
+      std::shared_ptr<peak::core::Buffer> newer;
+      try {
+        newer = data_stream_->WaitForFinishedBuffer(0);
+      } catch (...) {
+        break;
+      }
+      if (!newer) break;
+      try {
+        data_stream_->QueueBuffer(finished);
+      } catch (...) {
+      }
+      finished = newer;
+    }
+
     IdsFrame out;
     out.width = static_cast<int>(finished->Width());
     out.height = static_cast<int>(finished->Height());
@@ -344,7 +379,8 @@ bool IdsSingleCameraBackend::GrabFrame(int timeout_ms, IdsFrame* frame,
     out.bytes_per_pixel =
         pixels > 0 ? static_cast<int>(out.bytes.size() / static_cast<size_t>(pixels))
                    : 0;
-    out.is_mono8 = out.bytes_per_pixel <= 1;
+    out.is_mono8 = is_grayscale_format_;
+    out.pixel_format_name = current_pixel_format_name_;
 
     data_stream_->QueueBuffer(finished);
     *frame = std::move(out);

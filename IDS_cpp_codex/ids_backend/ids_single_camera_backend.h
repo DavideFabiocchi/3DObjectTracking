@@ -28,6 +28,7 @@ struct IdsFrame {
   int height = 0;
   int bytes_per_pixel = 0;
   bool is_mono8 = false;
+  std::string pixel_format_name;
   uint64_t timestamp_ticks = 0;
 };
 
@@ -74,6 +75,8 @@ class IdsSingleCameraBackend {
   IdsCameraConfig config_{};
   double applied_fps_hz_ = 0.0;
   double timestamp_tick_hz_ = 1e9;
+  bool is_grayscale_format_ = true;
+  std::string current_pixel_format_name_ = "Mono8";
 
   std::shared_ptr<peak::core::Device> device_;
   std::shared_ptr<peak::core::NodeMap> node_map_;
